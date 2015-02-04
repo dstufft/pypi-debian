@@ -10,6 +10,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
+
 import requests
 
 from pyramid.config import Configurator
@@ -21,10 +23,17 @@ from .mapper import PyPIDebianMapper
 
 @view_config(route_name="project.index", renderer="project.html")
 def project_index(request, project):
+    # Fetch the data from PyPI
     resp = requests.get("https://pypi.python.org/pypi/{}/json".format(project))
     resp.raise_for_status()
     data = resp.json()
-    return {"project": data["info"], "releases": data["releases"]}
+
+    # Sort the data from PyPI
+    releases = collections.OrderedDict()
+    for version, files in sorted(data["releases"].items()):
+        releases[version] = sorted(files, key=lambda x: x["filename"])
+
+    return {"project": data["info"], "releases": releases}
 
 
 @view_config(route_name="project.file")
