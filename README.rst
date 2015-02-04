@@ -1,6 +1,9 @@
 PyPI Debian
 ===========
 
+.. image:: https://travis-ci.org/dstufft/pypi-debian.svg?branch=master
+   :target: https://travis-ci.org/dstufft/pypi-debian
+
 PyPI Debian is a simple redirector for PyPI which enables Debian's uscan to
 easily detect versions from PyPI.
 
