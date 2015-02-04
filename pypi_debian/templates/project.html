@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>{{ project.name }} Index</title>
+  </head>
+  <body>
+    <h1>{{ project.name }} Index</h1>
+
+    {% for version, files in releases.items() -%}
+    {% for file in files -%}
+    <a href="{{ request.route_url('project.file', project=project.name, filename=file.filename) }}">{{ file.filename }}</a>
+    <br/>
+    {% endfor -%}
+    {% endfor %}
+  </body>
+</html>
