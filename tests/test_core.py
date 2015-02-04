@@ -226,7 +226,7 @@ class TestProjectFile:
 
 @pytest.mark.parametrize("settings", [None, {"foo": "bar"}])
 def test_configure(monkeypatch, settings):
-    Configurator_obj = pretend.stub(
+    configurator_obj = pretend.stub(
         set_view_mapper=pretend.call_recorder(lambda x: None),
         include=pretend.call_recorder(lambda x: None),
         add_jinja2_renderer=pretend.call_recorder(lambda x: None),
@@ -234,26 +234,26 @@ def test_configure(monkeypatch, settings):
         add_route=pretend.call_recorder(lambda x, y: None),
         scan=pretend.call_recorder(lambda: None),
     )
-    Configurator = pretend.call_recorder(lambda settings: Configurator_obj)
-    monkeypatch.setattr(pypi_debian.core, "Configurator", Configurator)
+    configurator = pretend.call_recorder(lambda settings: configurator_obj)
+    monkeypatch.setattr(pypi_debian.core, "Configurator", configurator)
 
-    assert configure(settings=settings) is Configurator_obj
+    assert configure(settings=settings) is configurator_obj
 
-    assert Configurator.calls == [
+    assert configurator.calls == [
         pretend.call(settings=settings if settings is not None else {}),
     ]
-    assert Configurator_obj.set_view_mapper.calls == [
+    assert configurator_obj.set_view_mapper.calls == [
         pretend.call(PyPIDebianMapper),
     ]
-    assert Configurator_obj.include.calls == [pretend.call("pyramid_jinja2")]
-    assert Configurator_obj.add_jinja2_renderer.calls == [
+    assert configurator_obj.include.calls == [pretend.call("pyramid_jinja2")]
+    assert configurator_obj.add_jinja2_renderer.calls == [
         pretend.call(".html"),
     ]
-    assert Configurator_obj.add_jinja2_search_path.calls == [
+    assert configurator_obj.add_jinja2_search_path.calls == [
         pretend.call("pypi_debian:templates", name=".html"),
     ]
-    assert Configurator_obj.add_route.calls == [
+    assert configurator_obj.add_route.calls == [
         pretend.call("project.index", "/{project}/"),
         pretend.call("project.file", "/{project}/{filename}"),
     ]
-    assert Configurator_obj.scan.calls == [pretend.call()]
+    assert configurator_obj.scan.calls == [pretend.call()]
