@@ -1,0 +1,4 @@
+include tox.ini
+
+recursive-include docs conf.py Makefile *.rst
+recursive-include pypi_debian/templates *.html
