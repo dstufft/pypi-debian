@@ -24,8 +24,15 @@ from .mapper import PyPIDebianMapper
 @view_config(route_name="project.index", renderer="project.html")
 def project_index(request, project):
     # Fetch the data from PyPI
-    resp = requests.get("https://pypi.python.org/pypi/{}/json".format(project))
-    resp.raise_for_status()
+    try:
+        resp = requests.get(
+            "https://pypi.python.org/pypi/{}/json".format(project)
+        )
+        resp.raise_for_status()
+    except requests.HTTPError as exc:
+        if exc.response.status_code == 404:
+            raise HTTPNotFound("Could not find project '{}'".format(project))
+        raise
     data = resp.json()
 
     # Sort the data from PyPI
@@ -39,8 +46,14 @@ def project_index(request, project):
 @view_config(route_name="project.file")
 def project_file(request, project, filename):
     # Get the data from PyPI
-    resp = requests.get("https://pypi.python.org/pypi/{}/json".format(project))
-    resp.raise_for_status()
+    try:
+        resp = requests.get(
+            "https://pypi.python.org/pypi/{}/json".format(project)
+        )
+        resp.raise_for_status()
+    except requests.HTTPError as exc:
+        if exc.response.status_code == 404:
+            raise HTTPNotFound("Could not find project '{}'".format(project))
     data = resp.json()
 
     # Find out the URL on PyPI that points to this filename
