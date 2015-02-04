@@ -57,10 +57,20 @@ def project_file(request, project, filename):
     data = resp.json()
 
     # Find out the URL on PyPI that points to this filename
+    if filename.endswith(".asc"):
+        sig = True
+        filename = filename[:-4]
+    else:
+        sig = False
     for version, files in data["releases"].items():
         for file_ in files:
             if file_["filename"] == filename:
-                return HTTPMovedPermanently(file_["url"])
+                if sig and file_["has_sig"]:
+                    return HTTPMovedPermanently(file_["url"] + ".asc")
+                elif sig:
+                    continue
+                else:
+                    return HTTPMovedPermanently(file_["url"])
 
     raise HTTPNotFound(
         "Could not find filename '{}' for project '{}'".format(
