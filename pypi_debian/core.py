@@ -55,22 +55,33 @@ def project_file(request, project, filename):
             raise HTTPNotFound("Could not find project '{}'".format(project))
     data = resp.json()
 
-    # Find out the URL on PyPI that points to this filename
+    # Determine if we're looking for a signature file and if we are correct
+    # the filename to the non signature filename.
     if filename.endswith(".asc"):
         sig = True
         filename = filename[:-4]
     else:
         sig = False
+
+    # Find out the URL on PyPI that points to this filename.
     for version, files in data["releases"].items():
         for file_ in files:
             if file_["filename"] == filename:
+                # If we're looking for a signature, and this file has a
+                # signature then we'll redirect to this URL.
                 if sig and file_["has_sig"]:
                     return HTTPMovedPermanently(file_["url"] + ".asc")
+                # If we're looking for a signature, and this file does not have
+                # a signature then continue on looking for more files.
                 elif sig:
                     continue
+                # If we're not looking for a signature then redirect to this
+                # URL.
                 else:
                     return HTTPMovedPermanently(file_["url"])
 
+    # If we've gotten to this point, then we were unable to find a filename
+    # that matches the given filename for this project.
     raise HTTPNotFound(
         "Could not find filename '{}' for project '{}'".format(
             project,
