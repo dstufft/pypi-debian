@@ -11,7 +11,6 @@
 # limitations under the License.
 
 import functools
-import inspect
 
 from pyramid.config.views import DefaultViewMapper
 
@@ -29,12 +28,6 @@ class PyPIDebianMapper(DefaultViewMapper):
         @functools.wraps(view)
         def wrapper(context, request):
             kwargs = request.matchdict.copy()
-
-            if inspect.isclass(view):
-                inst = view(request)
-                meth = getattr(inst, self.attr)
-                return meth(**kwargs)
-            else:
-                return view(request, **kwargs)
+            return view(request, **kwargs)
 
         return wrapper
