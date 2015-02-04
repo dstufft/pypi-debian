@@ -84,8 +84,7 @@ def project_file(request, project, filename):
     # that matches the given filename for this project.
     raise HTTPNotFound(
         "Could not find filename '{}' for project '{}'".format(
-            project,
-            filename,
+            filename, project,
         )
     )
 
