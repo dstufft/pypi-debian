@@ -21,13 +21,14 @@ from pyramid.view import view_config
 from .mapper import PyPIDebianMapper
 
 
+PYPI_JSON_URL = "https://pypi.python.org/pypi/{}/json"
+
+
 @view_config(route_name="project.index", renderer="project.html")
 def project_index(request, project):
     # Fetch the data from PyPI
     try:
-        resp = requests.get(
-            "https://pypi.python.org/pypi/{}/json".format(project)
-        )
+        resp = requests.get(PYPI_JSON_URL.format(project))
         resp.raise_for_status()
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
@@ -47,9 +48,7 @@ def project_index(request, project):
 def project_file(request, project, filename):
     # Get the data from PyPI
     try:
-        resp = requests.get(
-            "https://pypi.python.org/pypi/{}/json".format(project)
-        )
+        resp = requests.get(PYPI_JSON_URL.format(project))
         resp.raise_for_status()
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
